@@ -1,11 +1,13 @@
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
+  version         = "19.21.0"  # or latest 19.x version
+
   cluster_name    = var.cluster_name
-  cluster_version = "1.27"
-  subnets         = module.vpc.public_subnets
+  cluster_version = "1.29"
+  subnet_ids      = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
 
-  node_groups = {
+  eks_managed_node_groups = {
     default = {
       desired_capacity = 2
       max_capacity     = 3
@@ -15,10 +17,5 @@ module "eks" {
     }
   }
 
-  manage_aws_auth = true
-
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
+  enable_irsa = true
 }
